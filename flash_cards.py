@@ -88,14 +88,18 @@ flashcards = [
     ("SBIRT", "Screening, Brief Intervention, Referral to Treatment model for substance use disorders"),
 ]
 
+
 current_index = 0
-showing_answer = False  # Tracks whether definition is showing
+showing_answer = False  
 
 # GUI Functions
 def flip_card():
     global showing_answer
     showing_answer = not showing_answer
-    animate_flip(show_answer=showing_answer)
+    if showing_answer:
+        card_text.set(flashcards[current_index][1])
+    else:
+        card_text.set(flashcards[current_index][0])
     flip_button.config(text="Flip")
 
 def next_card():
@@ -104,32 +108,8 @@ def next_card():
     if current_index >= len(flashcards):
         current_index = 0
     showing_answer = False
-    animate_flip(next_card=True)
+    card_text.set(flashcards[current_index][0])
     flip_button.config(text="Flip")
-
-def animate_flip(show_answer=False, next_card=False):
-    steps = 10
-    shrink_width = card_frame.winfo_width()
-    
-    def shrink(step):
-        if step > 0:
-            card_frame.config(width=int(shrink_width * step / steps))
-            root.after(20, shrink, step-1)
-        else:
-            if next_card:
-                card_text.set(flashcards[current_index][0])
-            elif show_answer:
-                card_text.set(flashcards[current_index][1])
-            else:
-                card_text.set(flashcards[current_index][0])
-            expand(1)
-    
-    def expand(step):
-        if step <= steps:
-            card_frame.config(width=int(shrink_width * step / steps))
-            root.after(20, expand, step+1)
-    
-    shrink(steps)
 
 # GUI setup
 root = tk.Tk()
