@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import font as tkfont
 
 # Flashcards 
 flashcards = [
@@ -88,11 +89,27 @@ flashcards = [
     ("SBIRT", "Screening, Brief Intervention, Referral to Treatment model for substance use disorders"),
 ]
 
-
 current_index = 0
 showing_answer = False  
 
-# GUI Functions
+# --- Function to auto-resize font ---
+def resize_text(event=None):
+    """Dynamically resize text to fit inside card_label without overflow."""
+    max_width = card_frame.winfo_width() - 20
+    max_height = card_frame.winfo_height() - 20
+    text = card_text.get()
+
+    # Start with a reasonably large font
+    size = 32
+    f = tkfont.Font(family="Arial", size=size)
+
+    # Reduce font size until text fits both width and height
+    while (f.measure(text) > max_width or f.metrics("linespace") * text.count("\n") > max_height) and size > 8:
+        size -= 1
+        f.configure(size=size)
+    card_label.config(font=f)
+
+# --- GUI Functions ---
 def flip_card():
     global showing_answer
     showing_answer = not showing_answer
@@ -101,17 +118,17 @@ def flip_card():
     else:
         card_text.set(flashcards[current_index][0])
     flip_button.config(text="Flip")
+    resize_text()
 
 def next_card():
     global current_index, showing_answer
-    current_index += 1
-    if current_index >= len(flashcards):
-        current_index = 0
+    current_index = (current_index + 1) % len(flashcards)
     showing_answer = False
     card_text.set(flashcards[current_index][0])
     flip_button.config(text="Flip")
+    resize_text()
 
-# GUI setup
+# --- GUI Setup ---
 root = tk.Tk()
 root.title("Flashcards - Principles of Philosophy")
 root.geometry("650x400")
@@ -122,10 +139,12 @@ card_text.set(flashcards[current_index][0])
 
 card_frame = tk.Frame(root, bg="white", bd=2, relief="raised", width=500, height=250)
 card_frame.pack(pady=50)
-card_label = tk.Label(card_frame, textvariable=card_text, wraplength=450, font=("Arial", 16), bg="white")
-card_label.place(relx=0.5, rely=0.5, anchor="center")
+card_frame.pack_propagate(False)  # prevent frame resizing
 
-# Buttons frame side by side
+card_label = tk.Label(card_frame, textvariable=card_text, wraplength=480, bg="white", justify="center")
+card_label.pack(expand=True, fill="both", padx=10, pady=10)
+
+# Buttons
 button_frame = tk.Frame(root, bg="#f0f0f0")
 button_frame.pack(pady=10)
 
@@ -134,5 +153,11 @@ flip_button.pack(side="left", padx=10)
 
 next_button = tk.Button(button_frame, text="Next Card", command=next_card, width=15, height=2, bg="#2196F3", fg="white", font=("Arial", 12))
 next_button.pack(side="left", padx=10)
+
+# Bind resizing so text adjusts when window size changes
+card_frame.bind("<Configure>", resize_text)
+
+# Initial adjustment
+root.after(100, resize_text)
 
 root.mainloop()
