@@ -92,7 +92,7 @@ flashcards = [
 current_index = 0
 showing_answer = False  
 
-# --- Function to auto-resize font ---
+# auto font resize
 def resize_text(event=None):
     """Dynamically resize text to fit inside card_label without overflow."""
     max_width = card_frame.winfo_width() - 20
@@ -108,8 +108,7 @@ def resize_text(event=None):
         size -= 1
         f.configure(size=size)
     card_label.config(font=f)
-
-# --- GUI Functions ---
+# GUI
 def flip_card():
     global showing_answer
     showing_answer = not showing_answer
@@ -128,7 +127,7 @@ def next_card():
     flip_button.config(text="Flip")
     resize_text()
 
-# --- GUI Setup ---
+# GUI setup
 root = tk.Tk()
 root.title("Flashcards - Principles of Philosophy")
 root.geometry("650x400")
@@ -139,7 +138,7 @@ card_text.set(flashcards[current_index][0])
 
 card_frame = tk.Frame(root, bg="white", bd=2, relief="raised", width=500, height=250)
 card_frame.pack(pady=50)
-card_frame.pack_propagate(False)  # prevent frame resizing
+card_frame.pack_propagate(False) 
 
 card_label = tk.Label(card_frame, textvariable=card_text, wraplength=480, bg="white", justify="center")
 card_label.pack(expand=True, fill="both", padx=10, pady=10)
